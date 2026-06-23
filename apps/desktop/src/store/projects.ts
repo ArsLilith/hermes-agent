@@ -3,6 +3,7 @@ import { atom } from 'nanostores'
 import { liveSessionProjectId, type SidebarProjectTree } from '@/app/chat/sidebar/projects/workspace-groups'
 import { persistentAtom } from '@/lib/persisted'
 import { activeGateway, ensureActiveGatewayOpen } from '@/store/gateway'
+import { setSidebarAgentsGrouped } from '@/store/layout'
 import { requestFreshSession } from '@/store/profile'
 import { $selectedStoredSessionId, $sessions, workspaceCwdForNewSession } from '@/store/session'
 import type { ProjectInfo, ProjectsPayload } from '@/types/hermes'
@@ -168,8 +169,15 @@ export async function followActiveSessionCwd(cwd: string): Promise<void> {
   // Resolve only after the refresh, so a just-created/auto project is in the tree.
   const projectId = projectIdForCwd(target)
 
-  if (projectId && projectId !== $projectScope.get()) {
-    enterProject(projectId)
+  if (projectId) {
+    // The Projects tree only renders in grouped mode, so flip the sidebar into
+    // it — otherwise following from the flat Sessions list would change scope
+    // invisibly. Then drill into the thread's project.
+    setSidebarAgentsGrouped(true)
+
+    if (projectId !== $projectScope.get()) {
+      enterProject(projectId)
+    }
   }
 }
 
