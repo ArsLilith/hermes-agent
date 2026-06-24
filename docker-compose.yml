@@ -7,9 +7,12 @@ services:
     volumes:
       - '~/.hermes:/opt/data'
     environment:
-      - 'HERMES_UID=${HERMES_UID:-10000}'
-      - 'HERMES_GID=${HERMES_GID:-10000}'
+      - 'HERMES_UID=${HERMES_UID:-0}'
+      - 'HERMES_GID=${HERMES_GID:-0}'
       - 'OPENROUTER_API_KEY=${OPENROUTER_API_KEY}'
+      - 'HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${HERMES_DASHBOARD_BASIC_AUTH_USERNAME}'
+      - 'HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=${HERMES_DASHBOARD_BASIC_AUTH_PASSWORD}'
+      - 'HERMES_DASHBOARD_BASIC_AUTH_SECRET=${HERMES_DASHBOARD_BASIC_AUTH_SECRET}'
     command: [dashboard, '--host', '0.0.0.0', '--no-open']
     expose:
       - '9119'
