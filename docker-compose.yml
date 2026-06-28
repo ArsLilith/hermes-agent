@@ -40,7 +40,7 @@ services:
     expose:
       - '3000'
     labels:
-      - 'traefik.http.middlewares.warroomauth.basicauth.users=admin:$$apr1$$XRfTR85L$$LHsezJgJ5aPjtpCIjMupP1'
+      - 'traefik.http.middlewares.warroomauth.basicauth.users=admin:$$$$apr1$$$$XRfTR85L$$$$LHsezJgJ5aPjtpCIjMupP1'
       - 'traefik.http.routers.https-0-vcowya4fd5ybas2cxr9pnwtq-warroom.middlewares=gzip,warroomauth'
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
