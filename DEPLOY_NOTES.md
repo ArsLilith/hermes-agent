@@ -1,2 +1,2 @@
-Hermes-Agent — deployed via Coolify on 2026-06-25T01:20:58Z
-Auto-deploy webhook test.
+Hermes deployed on: new VPS (167.233.61.247) + old VPS (95.170.30.35).
+Auto-deploy test 2026-06-28T19:28:44Z
