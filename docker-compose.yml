@@ -1,8 +1,8 @@
 services:
-  dashboard:
+  warroom:
     build: .
     image: hermes-agent
-    container_name: hermes-dashboard
+    container_name: hermes-warroom
     restart: unless-stopped
     volumes:
       - '~/.hermes:/opt/data'
@@ -10,25 +10,41 @@ services:
     environment:
       - 'HERMES_UID=${HERMES_UID:-0}'
       - 'HERMES_GID=${HERMES_GID:-0}'
-      - 'OPENROUTER_API_KEY=${OPENROUTER_API_KEY}'
+      - 'HERMES_HOME=/opt/data'
+      - 'OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}'
       - 'GEMINI_API_KEY=${GEMINI_API_KEY:-}'
-      - 'HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${HERMES_DASHBOARD_BASIC_AUTH_USERNAME}'
-      - 'HERMES_DASHBOARD_BASIC_AUTH_PASSWORD_HASH=${HERMES_DASHBOARD_BASIC_AUTH_PASSWORD_HASH}'
-      - 'HERMES_DASHBOARD_BASIC_AUTH_SECRET=${HERMES_DASHBOARD_BASIC_AUTH_SECRET}'
-      # Optional tool keys (empty by default — set in Coolify to enable)
-      - 'EXA_API_KEY=${EXA_API_KEY:-}'
-      - 'FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY:-}'
-      - 'FAL_KEY=${FAL_KEY:-}'
-      - 'VOICE_TOOLS_OPENAI_KEY=${VOICE_TOOLS_OPENAI_KEY:-}'
-    command: [dashboard, '--host', '0.0.0.0', '--no-open']
+      - 'OBSIDIAN_VAULT_PATH=/opt/data/vault'
+      - 'NITRO_HOST=0.0.0.0'
+      - 'NITRO_PORT=3000'
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        mkdir -p /opt/data/vault /opt/data/war-room
+        if [ ! -f /opt/data/war-room/.output/server/index.mjs ]; then
+          echo "[warroom] downloading release..."
+          cd /opt/data/war-room
+          curl -fsSL -o wr.tar.gz https://github.com/Naroh091/hermes-war-room/releases/latest/download/hermes-war-room.tar.gz
+          tar xzf wr.tar.gz && rm -f wr.tar.gz
+        fi
+        echo "[warroom] ensuring profiles..."
+        hermes profile create lider --clone 2>/dev/null || true
+        hermes profile create chercheur --clone 2>/dev/null || true
+        hermes profile create redacteur --clone 2>/dev/null || true
+        echo "[warroom] starting kanban dispatcher..."
+        hermes kanban daemon --force --interval 60 &
+        echo "[warroom] starting war-room server on 0.0.0.0:3000..."
+        cd /opt/data/war-room
+        exec node .output/server/index.mjs
     expose:
-      - '9119'
+      - '3000'
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:9119/api/status', timeout=5).status==200 else 1)"]
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 90s
+      retries: 5
+      start_period: 150s
 
 volumes:
   hermes_backups:
