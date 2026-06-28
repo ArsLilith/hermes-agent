@@ -28,10 +28,15 @@ services:
           curl -fsSL -o wr.tar.gz https://github.com/Naroh091/hermes-war-room/releases/latest/download/hermes-war-room.tar.gz
           tar xzf wr.tar.gz && rm -f wr.tar.gz
         fi
-        echo "[warroom] ensuring profiles..."
-        hermes profile create lider --clone 2>/dev/null || true
-        hermes profile create chercheur --clone 2>/dev/null || true
-        hermes profile create redacteur --clone 2>/dev/null || true
+        echo "[warroom] ensuring agent team (mirrors reference screenshot)..."
+        hermes profile create orchestrator --clone 2>/dev/null || true
+        hermes profile create architect --clone 2>/dev/null || true
+        hermes profile create backend-dev --clone 2>/dev/null || true
+        hermes profile create db-architect --clone 2>/dev/null || true
+        hermes profile create data-engineer --clone 2>/dev/null || true
+        hermes profile create devops-engineer --clone 2>/dev/null || true
+        hermes profile create qa-engineer --clone 2>/dev/null || true
+        hermes profile create tech-writer --clone 2>/dev/null || true
         echo "[warroom] starting kanban dispatcher..."
         hermes kanban daemon --force --interval 60 &
         echo "[warroom] starting war-room server on 0.0.0.0:3000..."
