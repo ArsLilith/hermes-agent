@@ -22,13 +22,13 @@ services:
       - |
         set -e
         mkdir -p /opt/data/vault /opt/data/war-room
-        if [ ! -f /opt/data/war-room/.skin-v2 ]; then
+        if [ ! -f /opt/data/war-room/.skin-v3 ]; then
           echo "[warroom] downloading custom dark-neon build..."
           rm -rf /opt/data/war-room
           mkdir -p /opt/data/war-room
           cd /opt/data/war-room
           curl -fsSL -o wr.tar.gz https://github.com/ArsLilith/hermes-war-room/releases/download/custom/hermes-war-room.tar.gz
-          tar xzf wr.tar.gz && rm -f wr.tar.gz && touch .skin-v2
+          tar xzf wr.tar.gz && rm -f wr.tar.gz && touch .skin-v3
         fi
         echo "[warroom] ensuring agent team (mirrors reference screenshot)..."
         hermes profile create orchestrator --clone 2>/dev/null || true
